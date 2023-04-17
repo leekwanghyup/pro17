@@ -61,7 +61,7 @@
 				<td></td>
 				<td colspan="2">
 					<button>글쓰기</button>
-					<button type="button" onclick="backToList(this.form)">글쓰기</button>
+					<button type="button" onclick="backToList(this.form)">글목록으로</button>
 				</td>
 			</tr>
 		</table>
