@@ -54,7 +54,7 @@ public class BoardController extends HttpServlet{
 				request.setAttribute("articleList", articleList);
 				nextPage = "/brd/listArticles.jsp";
 			} else if (action.equals("/articleForm.do")) { // 글쓰기 폼
-				nextPage = "/board/articleForm.jsp";
+				nextPage = "/brd/articleForm.jsp";
 			}  else if (action.equals("/addArticle.do")) {
 				Map<String, String> articleMap = upload(request, response);
 				
@@ -64,7 +64,7 @@ public class BoardController extends HttpServlet{
 				
 				ArticleVO articleVO = new ArticleVO(); 
 				articleVO.setParentNO(0);
-				articleVO.setId("hong");
+				articleVO.setId("hong"); // 임시작성자
 				articleVO.setTitle(title);
 				articleVO.setContent(content);
 				articleVO.setImageFileName(imageFileName);
@@ -99,6 +99,7 @@ public class BoardController extends HttpServlet{
 					if (fileItem.getSize() > 0) {
 						String fileName = fileItem.getName();
 						articleMap.put(fileItem.getFieldName(), fileName);
+						
 						File uploadFile = new File(currentDirPath + "\\" + fileName);
 						fileItem.write(uploadFile);
 					}
@@ -107,7 +108,6 @@ public class BoardController extends HttpServlet{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		return null;
+		return articleMap;
 	}
 }
