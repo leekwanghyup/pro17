@@ -170,7 +170,7 @@ $(function(){
 				.submit();
 	})
 	
-	// 삭제처리 21:30
+	// 삭제처리 
 	$('.boardBtnBox .del').on('click',function(){
 		frmArticle.attr('method','post')
 			.attr('action','${contextPath}/board/removeArticle.do')
@@ -178,6 +178,15 @@ $(function(){
 			.append($('[name="articleNO"]'))
 			.submit();
 	}); 
+	
+	// 답글 쓰기 페이지로 이동
+	$('.boardBtnBox .reply').on('click',function(){
+		frmArticle.attr('method','get')
+			.attr('action','${contextPath}/board/replyForm.do')
+			.attr('enctype','utf-8')
+			.append($('[name="articleNO"]'))
+			.submit();
+	});
 });
 </script>
 </body>

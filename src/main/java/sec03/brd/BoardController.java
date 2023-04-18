@@ -58,6 +58,9 @@ public class BoardController extends HttpServlet{
 			} else if (action.equals("/articleForm.do")) { // 글쓰기 폼
 				nextPage = "/brd/articleForm.jsp";
 			}  else if (action.equals("/addArticle.do")) {
+				String ipAddress = request.getRemoteAddr();
+				
+				
 				Map<String, String> articleMap = upload(request, response);
 				
 				String title = articleMap.get("title");
@@ -90,7 +93,6 @@ public class BoardController extends HttpServlet{
 					 * @Param3 : 대상 디렉토리가 없는 경우 디렉토리 생성 여부
 					 * */ 
 					FileUtils.moveFileToDirectory(srcFile, destDir, true);
-					
 				}
 				
 				// 클라이언트 응답
@@ -154,6 +156,47 @@ public class BoardController extends HttpServlet{
 				// 클라이언트 응답
 				HttpSession session = request.getSession();
 				session.setAttribute("feedback", "delArticle");
+				response.sendRedirect(request.getContextPath()+"/board/listArticles.do");
+				return;
+			} 
+			
+			// 답글쓰기 폼 
+			else if (action.equals("/replyForm.do")) {
+				int parentNO = Integer.parseInt(request.getParameter("articleNO"));
+				HttpSession session = request.getSession();
+				session.setAttribute("parentNO", parentNO);
+				nextPage = "/brd/replyForm.jsp";
+			}
+			// 답글쓰기 처리 
+			else if(action.equals("/addReply.do")) {
+				HttpSession session = request.getSession();
+				int parentNO = (Integer) session.getAttribute("parentNO"); // 부모글 세션에서 가져오기
+				session.removeAttribute("parentNO"); // 세션 삭제 
+				
+				Map<String, String> articleMap = upload(request, response);
+				String title = articleMap.get("title");
+				String content = articleMap.get("content");
+				String imageFileName = articleMap.get("imageFileName");
+				ArticleVO articleVO = new ArticleVO();
+				articleVO.setParentNO(parentNO); // 부모글번호 추가 
+				articleVO.setId("lee"); // 임시작성자 
+				articleVO.setTitle(title);
+				articleVO.setContent(content);
+				articleVO.setImageFileName(imageFileName);
+				
+				int articleNo = boardService.addArticle(articleVO);
+				if(imageFileName!=null && !imageFileName.isBlank()) {
+					File srcFile = new 	File(ARTICLE_IMAGE_REPO +"\\"+"temp"+"\\"+imageFileName); 
+					File destDir = new File(ARTICLE_IMAGE_REPO +"\\"+articleNo); 
+					if(!destDir.exists()) {
+						destDir.mkdirs(); // 
+					}
+					FileUtils.moveFileToDirectory(srcFile, destDir, true);
+				}
+				
+				// 클라이언트 응답
+				session = request.getSession();
+				session.setAttribute("feedback", "addReplyarticle");
 				response.sendRedirect(request.getContextPath()+"/board/listArticles.do");
 				return;
 			}

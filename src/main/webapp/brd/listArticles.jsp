@@ -71,6 +71,10 @@
 </body>
 
 <script>
+window.onbeforeunload = function() {
+    // 캐시 비우기
+    window.localStorage.clear();
+};
 // 새글이 추가 된 경우 피드백 출력 
 $(function(){
 	var feedback = "${feedback}";
@@ -80,6 +84,8 @@ $(function(){
 		alert("글을 수정하였습니다.");
 	} else if(feedback=='delArticle'){
 		alert("글을 삭제하였습니다.");
+	} else if(feedback=='addReplyarticle'){
+		alert("답글을 작성하였습니다.")
 	}
 });
 
