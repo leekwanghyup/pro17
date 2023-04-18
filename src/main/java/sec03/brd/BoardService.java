@@ -27,5 +27,4 @@ public class BoardService {
 	public void modArticle(ArticleVO article) {
 		boardDAO.updateArticle(article);
 	}
-	
 }
