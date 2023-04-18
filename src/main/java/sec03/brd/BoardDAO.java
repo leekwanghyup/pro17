@@ -187,4 +187,48 @@ public class BoardDAO {
 			e.printStackTrace();
 		}
 	}
+	
+	// 삭제 대상 글번호 조회 
+	public List<Integer> selectRemovedArticles(int  articleNO) {
+		Connection conn = null; 
+		PreparedStatement pstmt = null;
+		ResultSet rs = null; 
+		List<Integer> articleNOList = new ArrayList<Integer>();
+		
+		try {
+			conn = dataSource.getConnection();
+			String query = "SELECT articleNO FROM  t_board  ";
+			query += " START WITH articleNO = ?";
+			query += " CONNECT BY PRIOR  articleNO = parentNO";
+			pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, articleNO);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				articleNOList.add(rs.getInt("articleNO"));
+			}
+			rs.close();
+			pstmt.close();
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return articleNOList; 
+	}
+	
+	// 글 삭제
+	public void deleteArticle(int articleNO) {
+		Connection conn = null; 
+		PreparedStatement pstmt = null;
+		String query = "DELETE FROM t_board  WHERE articleNO = ?";
+		try {
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, articleNO);
+			pstmt.executeUpdate();
+			pstmt.close();
+			conn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

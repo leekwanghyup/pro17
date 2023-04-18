@@ -27,4 +27,14 @@ public class BoardService {
 	public void modArticle(ArticleVO article) {
 		boardDAO.updateArticle(article);
 	}
+	
+	// 삭제 대상 글 번호 리스트
+	public List<Integer> selectRemovedArticles(int  articleNO) {
+		return boardDAO.selectRemovedArticles(articleNO);
+	}
+	
+	// 글 삭제
+	public void deleteArticle(int articleNO) {
+		boardDAO.deleteArticle(articleNO);
+	}
 }

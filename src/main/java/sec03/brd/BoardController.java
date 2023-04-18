@@ -140,6 +140,24 @@ public class BoardController extends HttpServlet{
 				return;
 			}
 			
+			// 삭제 처리 
+			else if(action.equals("/removeArticle.do")) {
+				int articleNO = Integer.parseInt(request.getParameter("articleNO"));
+				List<Integer> articleNOList = boardService.selectRemovedArticles(articleNO);
+				boardService.deleteArticle(articleNO);
+				for(int _articleNO : articleNOList) {
+					File imgDir = new File(ARTICLE_IMAGE_REPO+"\\"+_articleNO);
+					if(imgDir.exists()) {
+						FileUtils.deleteDirectory(imgDir);
+					}
+				}
+				// 클라이언트 응답
+				HttpSession session = request.getSession();
+				session.setAttribute("feedback", "delArticle");
+				response.sendRedirect(request.getContextPath()+"/board/listArticles.do");
+				return;
+			}
+			
 			else {
 				nextPage = "/brd/listArticles.jsp";
 			} 

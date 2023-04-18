@@ -78,6 +78,8 @@ $(function(){
 		alert("새로운 글을 작성하였습니다.");
 	} else if(feedback=='modArticle'){
 		alert("글을 수정하였습니다.");
+	} else if(feedback=='delArticle'){
+		alert("글을 삭제하였습니다.");
 	}
 });
 

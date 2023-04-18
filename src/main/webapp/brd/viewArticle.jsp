@@ -169,6 +169,15 @@ $(function(){
 				.append($('[name="articleNO"]'))
 				.submit();
 	})
+	
+	// 삭제처리 21:30
+	$('.boardBtnBox .del').on('click',function(){
+		frmArticle.attr('method','post')
+			.attr('action','${contextPath}/board/removeArticle.do')
+			.attr('enctype','utf-8') // 변경하지 않으면 request.getParameter()메소드를 사용할 수 없다.
+			.append($('[name="articleNO"]'))
+			.submit();
+	}); 
 });
 </script>
 </body>
