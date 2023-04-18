@@ -1,8 +1,10 @@
 package sec03.brd;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,12 +83,13 @@ public class BoardDAO {
 	}
 	
 	// 새로운 글쓰기 처리 
-	public void insertNewArticle(ArticleVO article) {
+	public int insertNewArticle(ArticleVO article) {
 		Connection conn = null; 
+		int articleNO = getNewArticleNO();
 		PreparedStatement pstmt = null;
 		try {
 			conn = dataSource.getConnection();
-			int articleNO = getNewArticleNO();
+			
 			int parentNO = article.getParentNO();
 			String title = article.getTitle();
 			String content = article.getContent();
@@ -104,6 +107,83 @@ public class BoardDAO {
 			pstmt.close();
 			conn.close();
 		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return articleNO;
+	}
+	
+	// 글 상세 
+	public ArticleVO selectArticle(int articleNO){
+		Connection conn = null; 
+		PreparedStatement pstmt = null;
+		ResultSet rs = null; 
+		ArticleVO article = new ArticleVO();
+		try {
+			conn= dataSource.getConnection();
+			String query ="select articleNO,parentNO,title,content, imageFileName, id, writeDate";
+			query+= " from t_board";
+			query+= " where articleNO=?";
+			pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1, articleNO);
+			rs =pstmt.executeQuery();
+			if(rs.next()) {
+				int _articleNO =rs.getInt("articleNO");
+				int parentNO=rs.getInt("parentNO");
+				String title = rs.getString("title");
+				String content =rs.getString("content");
+				String imageFileName= rs.getString("imageFileName");
+				String id = rs.getString("id");
+				Date writeDate = rs.getDate("writeDate");
+				
+				article.setArticleNO(_articleNO);
+				article.setParentNO (parentNO);
+				article.setTitle(title);
+				article.setContent(content);
+				article.setImageFileName(imageFileName);
+				article.setId(id);
+				article.setWriteDate(writeDate);
+				rs.close();
+				pstmt.close();
+				conn.close();
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return article;
+	}
+
+	public void updateArticle(ArticleVO article) {
+		Connection conn = null; 
+		PreparedStatement pstmt = null;
+		
+		int articleNO = article.getArticleNO();
+		String title = article.getTitle();
+		String content = article.getContent();
+		String imageFileName = article.getImageFileName();
+		
+		try {
+			conn = dataSource.getConnection();
+			String query = "update t_board  set title=?, content=?";
+			if (imageFileName != null && !imageFileName.isBlank()) {
+				query += " ,imageFileName=?";
+			}
+			query += " where articleNO=?";
+			System.out.println(query);
+			pstmt = conn.prepareStatement(query);
+			pstmt.setString(1, title);
+			pstmt.setString(2, content);
+			if (imageFileName != null && !imageFileName.isBlank()) {
+				System.out.println("바인딩되냐?");
+				pstmt.setString(3, imageFileName);
+				pstmt.setInt(4, articleNO);
+			} else {
+				pstmt.setInt(3, articleNO);
+			}
+			pstmt.executeUpdate();
+			pstmt.close();
+			conn.close();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}

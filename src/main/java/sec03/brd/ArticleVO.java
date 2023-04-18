@@ -70,4 +70,10 @@ public class ArticleVO {
 	public void setWriteDate(Date writeDate) {
 		this.writeDate = writeDate;
 	}
+	@Override
+	public String toString() {
+		return "ArticleVO [level=" + level + ", articleNO=" + articleNO + ", parentNO=" + parentNO + ", title=" + title
+				+ ", content=" + content + ", imageFileName=" + imageFileName + ", id=" + id + ", writeDate="
+				+ writeDate + "]";
+	}
 }

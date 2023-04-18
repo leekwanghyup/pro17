@@ -1,8 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>    
-<c:set var="contextPath"  value="${pageContext.request.contextPath}"/>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+   
+ <c:set var="contextPath"  value="${pageContext.request.contextPath}"/>
+ 
+ <!-- 세션 확인 후 삭제  -->
+ <c:if test="${not empty sessionScope.feedback}">
+ 	<c:set var="feedback" value="${sessionScope.feedback}"/>
+ 	<c:remove var="feedback" scope="session"/> 
+ </c:if>
+ 
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,7 +22,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-
 
 <div class="container">
 	<h1>게시글 목록</h1>
@@ -62,4 +69,18 @@
 	</div>
 </div>
 </body>
+
+<script>
+// 새글이 추가 된 경우 피드백 출력 
+$(function(){
+	var feedback = "${feedback}";
+	if(feedback=='addNewArticle'){
+		alert("새로운 글을 작성하였습니다.");
+	} else if(feedback=='modArticle'){
+		alert("글을 수정하였습니다.");
+	}
+});
+
+</script>
+
 </html>

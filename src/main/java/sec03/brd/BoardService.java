@@ -14,7 +14,18 @@ public class BoardService {
 		return articleList; 
 	}
 	
-	public void addArticle(ArticleVO article){
-		boardDAO.insertNewArticle(article);		
+	public int addArticle(ArticleVO article){
+		return boardDAO.insertNewArticle(article);		
 	}
+	
+	//  글 상세 
+	public ArticleVO viewArticle(int articleNO) {
+		return boardDAO.selectArticle(articleNO);
+	}
+
+	// 글 수정
+	public void modArticle(ArticleVO article) {
+		boardDAO.updateArticle(article);
+	}
+	
 }
