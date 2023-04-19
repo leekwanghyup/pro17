@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -26,21 +27,26 @@ public class BoardDAO {
 		}
 	}
 	
-	public List<ArticleVO> selectAllArticles(){
+	public List<ArticleVO> selectAllArticles(Map<String, Integer> pagingMap){
 		Connection conn = null; 
 		PreparedStatement pstmt = null;
 		ResultSet rs = null; 
+		int startRow = pagingMap.get("startRow");
+		int endRow = pagingMap.get("endRow");
 		
 		List<ArticleVO> articleList = new ArrayList<>();
 		try {
 			conn = dataSource.getConnection();
-			String query = "SELECT LEVEL,articleNO,parentNO,title,content,id,writeDate" 
-					+ " from t_board"
-					+ " START WITH  parentNO=0" 
-					+ " CONNECT BY PRIOR articleNO=parentNO"
-					+ " ORDER SIBLINGS BY articleNO DESC";
-			System.out.println(query);
+			String query = "select * from (" 
+					+ " select rownum as rn,level,articleNO,"
+					+ " parentNO,title,content,id,writeDate" 
+					+ " from t_board start with parentNO =0"
+					+ " connect by prior articleNO = parentNO" 
+					+" order siblings by articleNO DESC)" 
+					+ "where rn between ? and ?";
 			pstmt = conn.prepareStatement(query);
+			pstmt.setInt(1,startRow); // 시작 번호 
+			pstmt.setInt(2,endRow); // 끝 번호 
 			rs = pstmt.executeQuery();
 			while(rs.next()) {
 				ArticleVO article = new ArticleVO();

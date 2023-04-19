@@ -51,18 +51,55 @@ public class BoardController extends HttpServlet{
 		request.setCharacterEncoding("utf-8");
 		String action = request.getPathInfo();
 		try {
+			
+			// 게시글 페이징 조회
 			if (action == null|| action.equals("/") || action.equals("/listArticles.do")) {
-				List<ArticleVO> articleList = boardService.listArticles();
+				
+				//페이징 처리 
+				String _pageNum = request.getParameter("pageNum");//페이지 번호 
+				String _articlePerPage = request.getParameter("articlePerPage");//한 페이지에 표시할 게시물 수
+				int pageNum = _pageNum==null ? 1 : Integer.parseInt(_pageNum); // 타입 변환 기본값 1,
+				int articlePerPage = _articlePerPage==null ? 10 : Integer.parseInt(_pageNum); // 타입 변환 기본값 10
+				int startRow = (pageNum-1)*articlePerPage+1; // 시작 행 번호
+				int endRow = pageNum*articlePerPage; // 끝 행 번호 
+				
+				
+				Map<String, Integer> pagingMap = new HashMap<String, Integer>();
+				pagingMap.put("startRow", startRow);
+				pagingMap.put("endRow", endRow);
+				
+				//페이지네이션
+				int pageLinkNumPerSection = 10; // 한 섹션에 표시되는 페이지링크 버튼 수
+				int totalArtilce = 442; // 임시 
+				int endPageLink = (int) Math.ceil(pageNum/(double)pageLinkNumPerSection)*pageLinkNumPerSection;
+				int startPageLink = endPageLink - pageLinkNumPerSection+1;
+				int realEndPageLink = (int) Math.ceil(totalArtilce / (double)articlePerPage);
+				
+				boolean prev = startPageLink != 1; 
+				boolean next = endPageLink < realEndPageLink;
+				if(endPageLink > realEndPageLink) endPageLink = realEndPageLink;
+				
+				System.out.println("페이지 번호 : "+pageNum );
+				System.out.println("시작 버튼 번호 :"+startPageLink);
+				System.out.println("끝 버튼 번호 :"+endPageLink);
+				System.out.println("이전 버튼 : " + prev);
+				System.out.println("다음 버튼 : " + next);
+				
+				Map<String, Object> pagination = new HashMap<>();
+				pagination.put("startPageLink", startPageLink);
+				pagination.put("endPageLink", endPageLink);
+				pagination.put("prev", prev);
+				pagination.put("next", next);
+				request.setAttribute("p", pagination);
+				
+
+				List<ArticleVO> articleList = boardService.listArticles(pagingMap);
 				request.setAttribute("articleList", articleList);
 				nextPage = "/brd/listArticles.jsp";
 			} else if (action.equals("/articleForm.do")) { // 글쓰기 폼
 				nextPage = "/brd/articleForm.jsp";
 			}  else if (action.equals("/addArticle.do")) {
-				String ipAddress = request.getRemoteAddr();
-				
-				
 				Map<String, String> articleMap = upload(request, response);
-				
 				String title = articleMap.get("title");
 				String content = articleMap.get("content");
 				String imageFileName = articleMap.get("imageFileName");

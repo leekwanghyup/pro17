@@ -1,6 +1,7 @@
 package sec03.brd;
 
 import java.util.List;
+import java.util.Map;
 
 public class BoardService {
 	private BoardDAO boardDAO; 
@@ -9,8 +10,8 @@ public class BoardService {
 		boardDAO = new BoardDAO();
 	}
 	
-	public List<ArticleVO> listArticles(){
-		List<ArticleVO> articleList = boardDAO.selectAllArticles(); 
+	public List<ArticleVO> listArticles(Map<String, Integer> pagingMap){
+		List<ArticleVO> articleList = boardDAO.selectAllArticles(pagingMap); 
 		return articleList; 
 	}
 	

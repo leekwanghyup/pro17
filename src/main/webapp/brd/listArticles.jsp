@@ -64,6 +64,17 @@
 			</c:otherwise>
 		</c:choose>
 	</table>
+  	<ul class="pagination">
+  		<c:if test="${p.prev}">
+	    	<li class="page-item"><a class="page-link" href="${p.startPageLink-1}">Previous</a></li>
+	    </c:if>
+	    <c:forEach var="pageLink" begin="${p.startPageLink}" end="${p.endPageLink}">
+	    	<li class="page-item"><a class="page-link" href="${pageLink}">${pageLink}</a></li>
+	    </c:forEach>
+	    <c:if test="${p.next}">
+	    	<li class="page-item"><a class="page-link" href="${p.endPageLink+1}">Next</a></li>
+	    </c:if>
+  	</ul>
 	<div class="text-right">
 		<a class="btn btn-sm btn-outline-primary" href="${contextPath}/board/articleForm.do">글쓰기</a>
 	</div>
@@ -71,12 +82,9 @@
 </body>
 
 <script>
-window.onbeforeunload = function() {
-    // 캐시 비우기
-    window.localStorage.clear();
-};
 // 새글이 추가 된 경우 피드백 출력 
 $(function(){
+	// 피드백
 	var feedback = "${feedback}";
 	if(feedback=='addNewArticle'){
 		alert("새로운 글을 작성하였습니다.");
@@ -87,6 +95,25 @@ $(function(){
 	} else if(feedback=='addReplyarticle'){
 		alert("답글을 작성하였습니다.")
 	}
+
+	
+	var listForm = $('<form/>',{
+		action : '${contextPath}/board/listArticles.do'
+	})
+	
+	// 페이지 이동 이벤트 
+	$('.pagination a').on('click',function(e){
+		e.preventDefault();
+		var pageNum = $(this).attr('href'); // 이동할 페이지 번호 
+		var pageNumObj = $('<input>',{ // input태그로 pageNum전달
+			name : 'pageNum', 
+			type : 'hidden', 
+			value : pageNum
+		}); 
+		listForm.append(pageNumObj);
+		listForm.appendTo($('body'));
+		listForm.submit();
+	}); 
 });
 
 </script>
